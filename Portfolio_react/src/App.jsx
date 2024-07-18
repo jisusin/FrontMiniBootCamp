@@ -36,7 +36,7 @@ function App() {
               <button id="button2">Resume Link</button>
             </div>
           </div>
-          <img id="greeting-image" src={`${process.env.PUBLIC_URL}/img/제리.png`} alt="Profile Image" />
+          <img id="greeting-image" src={`${process.env.PUBLIC_URL}/img/프로필사진.png`} alt="Profile Image" />
         </div>
         <div id="about">
           <h2>
