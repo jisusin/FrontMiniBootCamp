@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import './CustomCalendar.css'; // 위에서 작성한 CSS 파일을 import
 
-const CustomCalendar = () => {
+const CustomCalendar = ({ todos }) => {
   const [date, setDate] = useState(new Date());
   const [viewDate, setViewDate] = useState(new Date());
 
@@ -22,43 +21,58 @@ const CustomCalendar = () => {
   };
 
   const tileClassName = ({ date, view }) => {
-    const day = date.getDay(); // 0: Sunday, 1: Monday, ..., 6: Saturday
+    const day = date.getDay();
 
     if (view === 'month') {
-      if (day === 6) return 'saturday'; // Saturday
-      if (day === 0) return 'sunday'; // Sunday
+      if (day === 6) return 'saturday';
+      if (day === 0) return 'sunday';
     }
     return null;
   };
 
   const tileContent = ({ date, view }) => {
     const today = new Date();
-    if (
-      view === 'month' &&
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
-    ) {
-      return <div className="highlight-today-border"></div>;
+    const isToday = date.toDateString() === today.toDateString();
+
+    if (view === 'month' && isToday) {
+      return <div className="todo-dot" />;
     }
+
+    const hasTodos = todos.some((todo) => {
+      const todoDate = new Date(todo.date);
+      return date.toDateString() === todoDate.toDateString();
+    });
+
+    if (view === 'month' && hasTodos) {
+      return <div className="todo-dot" />;
+    }
+
     return null;
   };
 
   return (
     <div className="custom-calendar-container">
       <div className="calendar-header">
-        <h1 className="calendar-title">📆 Calendar</h1>
-        <button onClick={goToToday} className="today-button">Today</button>
+        <h2 className="calendar-title">📆 Calendar</h2>
+        <button onClick={goToToday}>Today !</button>
       </div>
       <Calendar
         onChange={onChange}
         value={date}
-        activeStartDate={viewDate}
-        onActiveStartDateChange={onActiveStartDateChange}
-        tileClassName={tileClassName} // Apply custom class names to tiles
+        tileClassName={tileClassName}
         tileContent={tileContent}
+        onActiveStartDateChange={onActiveStartDateChange}
       />
-      <p className="selected-date">Selected date : {date.toDateString()}</p>
+      <div className="selected-date">
+        Selected date: {date.toDateString()}
+        <ul>
+          {todos
+            .filter((todo) => new Date(todo.date).toDateString() === date.toDateString())
+            .map((todo, index) => (
+              <li key={index}>{todo.task}</li>
+            ))}
+        </ul>
+      </div>
     </div>
   );
 };
